@@ -15,7 +15,7 @@ public abstract class AggregateRoot:BaseEntity
         _domainEvents.Add(domainEvent);
 
     }
-    protected void ClearDomain()
+    public void ClearDomainvents()
     {
         _domainEvents.Clear();
     }
