@@ -1,5 +1,5 @@
 using Ordering.Domain.Events;
-
+using MassTransit;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -12,6 +12,22 @@ builder.Services.AddMediatR(cfg =>
 {
     cfg.RegisterServicesFromAssembly(typeof(OrderCreatedDomainEvent).Assembly);
 });
+
+builder.Services.AddMassTransit(x =>
+{
+x.UsingRabbitMq((ctx, cfg) =>
+{
+    cfg.Host("rabbitMq", "/", h =>
+    {
+        h.Username("guest");
+        h.Password("guest");
+    });
+    
+  
+
+
+}
+);
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
