@@ -1,6 +1,5 @@
 using Catalog.API.Configuration;
-using Catalog.API.Data;
-using Microsoft.EntityFrameworkCore;
+using Catalog.Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,7 +22,7 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<CatalogDbContext>();
-    Console.WriteLine("Connected to databse",context.Database.GetConnectionString());
+    Console.WriteLine("Connected to databse",context.Database.GetType());
 }
 
 if (app.Environment.IsDevelopment())
