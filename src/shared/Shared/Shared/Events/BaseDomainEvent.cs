@@ -11,3 +11,4 @@ public abstract record BaseDomainEvent : IDomainEvent
 
 
 }
+
