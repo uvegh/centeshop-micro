@@ -1,7 +1,7 @@
-﻿using Microsoft.Extensions.Logging;
+﻿
 using MassTransit;
 
-using MediatR;
+
 using Ordering.Infrastructure.Common;
 using Ordering.Domain.Events;
 using Shared.Library.Events;
