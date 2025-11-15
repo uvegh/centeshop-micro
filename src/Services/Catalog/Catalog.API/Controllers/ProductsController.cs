@@ -1,8 +1,9 @@
-
 using Microsoft.AspNetCore.Mvc;
 using Shared.Library.Model;
 using Catalog.API.DTOs;
 using AutoMapper;
+using MediatR;
+using Catalog.Application.Features.Command;
 
 
 namespace Catalog.API.Controllers;
@@ -11,16 +12,19 @@ namespace Catalog.API.Controllers;
 public class ProductsController : ControllerBase
 {
     private readonly IMapper _mapper;
+    private readonly IMediator _mediator;
 
-    public ProductsController(IMapper mapper)
+    public ProductsController(IMapper mapper, IMediator mediator)
     {
-       _mapper = mapper;
+        _mapper = mapper;
+
+        _mediator = mediator;
 
     }
 
     //in-memory
-   
-   
+
+
 
     //[HttpGet]
 
@@ -41,7 +45,7 @@ public class ProductsController : ControllerBase
     //public async Task<ActionResult<Product>> GetProduct ([FromRoute] Guid id)
     //{
     //    var product = _products.FirstOrDefault(x => (x.Id == id));
-        
+
     //    if (id == null)
     //    {
     //        return NotFound( new ApiResponse<Product>
@@ -61,33 +65,14 @@ public class ProductsController : ControllerBase
     //    });
     //}
 
-    //[HttpPost]
+    [HttpPost]
+                public async Task<ActionResult<ProductDto>> AddProduct(CreateProductCommand command)
+    {
+        await _mediator.Send(command);
+        // You may want to return a result or status here, e.g.:
+        // return Ok();
+        // or return CreatedAtAction(...);
+        return Ok(command);
+    }
+    }
 
-    //public async Task<ActionResult<ProductDto>> AddProduct(CreateProductDto product )
-    //{
-    //    var obj = _mapper.Map<Product>(product);
-      
-        
-
-         
-        
-    //    var res = _mapper.Map<ProductDto>(obj);
-    //    return CreatedAtAction(nameof(GetProduct), new {id=obj.Id},
-
-
-    //        new ApiResponse<ProductDto>
-    //        {
-    //            Data = res,
-    //            Message = "Product created",
-    //            Success = true
-
-    //        });
-         
-      
-
-
-
-    //}
-
-
-}
