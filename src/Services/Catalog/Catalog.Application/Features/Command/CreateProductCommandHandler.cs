@@ -1,33 +1,43 @@
 ﻿
 
-using ProductEntity = Catalog.Domain.Entities.Product;
+
+using AutoMapper;
+using Catalog.API.DTOs;
+using Catalog.Domain.Entities;
+using Catalog.Domain.Interfaces;
 using Catalog.Infrastructure.Data;
-using MediatR;
-using Microsoft.Extensions.Logging;
+
 
 
 namespace Catalog.Application.Features.Command;
 
-public class CreateProductCommandHandler:IRequestHandler<CreateProductCommand>
+public class CreateProductCommandHandler:IRequestHandler<CreateProductCommand, ProductDto>
 {
     private readonly CatalogDbContext _dbContext;
     private readonly ILogger _logger;
-    public CreateProductCommandHandler(CatalogDbContext dbContext, ILogger<CreateProductCommandHandler> logger)
+    private readonly IMapper _mapper;
+
+    private readonly IProductRepository _productRepo;
+    public CreateProductCommandHandler( IProductRepository productRepo , ILogger<CreateProductCommandHandler> logger,IMapper mapper)
     {
-        _dbContext = dbContext;
+        _productRepo = productRepo;
         _logger = logger;
+        _mapper = mapper;
     }
 
-    public async Task Handle(CreateProductCommand req, CancellationToken ct)
+    public async Task<ProductDto> Handle(CreateProductCommand req,CancellationToken ct)
     {
         var newProduct = ProductEntity.Create(req.Name, req.Price, req.StockQuantity);
 
-         _dbContext. Add(newProduct);
+         await _productRepo.AddAsync(newProduct,ct);
+        
       
-        await _dbContext.SaveChangesAsync(ct);
-        _logger.LogInformation("add new Product {newProduct}", newProduct);
-    
+        
+        _logger.LogInformation("add new Product {res}", newProduct);
 
+        return _mapper.Map<ProductDto>(newProduct);
 
     }
+
+   
 }
