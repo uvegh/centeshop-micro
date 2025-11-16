@@ -1,9 +1,11 @@
+
+using AutoMapper;
+using Catalog.API.DTOs;
+using Catalog.Application.Features.Command;
+using Catalog.Application.Features.Query.Product;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Library.Model;
-using Catalog.API.DTOs;
-using AutoMapper;
-using MediatR;
-using Catalog.Application.Features.Command;
 
 
 namespace Catalog.API.Controllers;
@@ -22,23 +24,22 @@ public class ProductsController : ControllerBase
 
     }
 
-    //in-memory
+    [HttpGet]
 
+    public async Task<ActionResult> GetAll()
+    {
+      var res=  await _mediator.Send(new GetProductsQuery());
+        return Ok(res);
 
+        //return Ok(new ApiResponse<List<Product>>
+        //{
+        //    Success = true,
+        //    Data = new GetProductsQuery()
+        //    Message = "successfully retrieved"
 
-    //[HttpGet]
+        //});
 
-    //public async Task<ActionResult<List<Product>>> GetAll()
-    //{
-    //    return Ok(new ApiResponse<List<Product>>
-    //    {
-    //        Success = true,
-    //        Data = _products,
-    //        Message = "successfully retrieved"
-
-    //    });
-
-    //}
+    }
 
     //[HttpGet("{id}")]
 
@@ -66,13 +67,10 @@ public class ProductsController : ControllerBase
     //}
 
     [HttpPost]
-                public async Task<ActionResult<ProductDto>> AddProduct(CreateProductCommand command)
+    public async Task<ActionResult<ProductDto>> AddProduct(CreateProductCommand command)
     {
         await _mediator.Send(command);
-        // You may want to return a result or status here, e.g.:
-        // return Ok();
-        // or return CreatedAtAction(...);
+    
         return Ok(command);
     }
-    }
-
+}
