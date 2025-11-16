@@ -52,21 +52,21 @@ namespace Catalog.API.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("28d9b656-d3ab-4064-8409-9fe1833a80f2"),
-                            CreatedAt = new DateTime(2025, 11, 15, 23, 10, 30, 797, DateTimeKind.Utc).AddTicks(2193),
+                            Id = new Guid("0bdab38a-2dd1-4ec5-90ef-3eac44b19444"),
+                            CreatedAt = new DateTime(2025, 11, 15, 23, 59, 33, 694, DateTimeKind.Utc).AddTicks(8810),
                             Name = "Lenovo",
                             Price = 999.99m,
                             StockQuantity = 10,
-                            UpdatedAT = new DateTime(2025, 11, 15, 23, 10, 30, 797, DateTimeKind.Utc).AddTicks(2197)
+                            UpdatedAT = new DateTime(2025, 11, 15, 23, 59, 33, 694, DateTimeKind.Utc).AddTicks(8812)
                         },
                         new
                         {
-                            Id = new Guid("4b1056e5-040f-44f6-acdc-a778001759d6"),
-                            CreatedAt = new DateTime(2025, 11, 15, 23, 10, 30, 797, DateTimeKind.Utc).AddTicks(2217),
+                            Id = new Guid("d9261391-ea5a-486d-aa28-abeb52653d74"),
+                            CreatedAt = new DateTime(2025, 11, 15, 23, 59, 33, 694, DateTimeKind.Utc).AddTicks(8815),
                             Name = "Iphone 15",
                             Price = 800.77m,
                             StockQuantity = 10,
-                            UpdatedAT = new DateTime(2025, 11, 15, 23, 10, 30, 797, DateTimeKind.Utc).AddTicks(2218)
+                            UpdatedAT = new DateTime(2025, 11, 15, 23, 59, 33, 694, DateTimeKind.Utc).AddTicks(8815)
                         });
                 });
 #pragma warning restore 612, 618
