@@ -42,7 +42,13 @@ public class ProductRepository : IProductRepository
 
     public async Task<Product?> GetByIdAsync(Guid id)
     {
-        throw new NotImplementedException();
+         var product = await _dbContext.Set<Product
+            >().FirstOrDefaultAsync(x => x.Id == id);
+        if (product != null)
+        {
+            return product;
+        }
+        return null;
     }
 
   public async  Task SaveChangesAsync(CancellationToken ct)
