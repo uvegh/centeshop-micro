@@ -11,7 +11,7 @@ public class Cart:AggregateRoot
 
     public Guid UserId { get; private set; }
     //initialize list immediately
-    public List<CartItem>? Items { get; set; } = new(); 
+    public List<CartItem>? Items { get; private  set; } = new(); 
 
 
     //public Cart(Guid userId, List<CartItem> items)
@@ -25,24 +25,20 @@ public class Cart:AggregateRoot
     {
         UserId = userId;
     }
-    public void   AddItem(Guid productId, int quantity)
+    public void   AddItem(Guid productId, int quantity, string productName,decimal unitPrice)
     {
         //check if it exist
         var checkItem = Items.FirstOrDefault(x => x.ProductId ==productId);
         if (checkItem != null)
         {
             //if exists increase quantity
-            checkItem.Quantity += 1;
+            checkItem.Increase(quantity);
         }
         else
         {
             //add new item 
-            Items.Add(new CartItem
-            {
-                ProductId = productId,
-                Quantity = quantity
-
-            });
+            Items.Add(new CartItem(productId, quantity, productName,unitPrice)
+           );
         }
        
 

@@ -5,5 +5,5 @@ namespace Cart.Domain.IRepository;
 public interface ICartRespository
 {
     Task<CartEntity> GetByUserIdAsync(Guid UserId);
-    Task SaveAsync(CartEntity cart);
+    Task SaveCartAsync(CartEntity cart);
 }

@@ -2,4 +2,5 @@
 
 namespace Cart.Application.Features.Cart.Command.AddItem;
 
-public record  AddToCartCommand(Guid UserId, Guid ProductId, int Quantity) :IRequest;
+public record  AddToCartCommand(Guid UserId, Guid ProductId, int Quantity) :IRequest
+    <CartEntity>;

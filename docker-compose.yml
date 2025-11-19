@@ -1,0 +1,100 @@
+version: "3.8"
+
+services:
+
+  catalog_postgres:
+    image: postgres:15-alpine
+    container_name: catalog_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: cente25
+      POSTGRES_DB: catalog_db
+    ports:
+      - "5433:5432"
+
+    volumes:
+      - catalog_data:/var/lib/postgresql/data
+    networks:
+      - microservices_network
+
+  ordering_postgres:
+    image: postgres:15-alpine
+    container_name: ordering_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: cente24
+      POSTGRES_DB: ordering_db
+    ports:
+      - "5434:5432"
+    volumes:
+      - ordering_data:/var/lib/postgresql/data
+    networks:
+      - microservices_network
+   
+  payment_postgres:
+    image: postgres:15-alpine
+    container_name: payment_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: cente25
+      POSTGRES_DB: payment_db
+    ports:
+      - "5435:5432"
+    volumes:
+      - payment_data:/var/lib/postgresql/data
+    networks:
+      - microservices_network 
+   
+  identity_postgres:
+    image: postgres:15-alpine
+    container_name: identity_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: cente25
+      POSTGRES_DB: identity_db
+    ports:
+      - "5437:5432"
+    volumes:
+      - identity_data:/var/lib/postgresql/data
+    networks:
+      - microservices_network
+
+  
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq
+    restart: always
+    ports:
+      - "5672:5672"   # AMQP for microservices
+      - "15672:15672" # RabbitMQ dashboard
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    networks:
+      - microservices_network
+
+  redis:
+   image: redis:7-alpine
+   command: ["redis-server", "--appendonly", "yes"]
+   volumes:
+    - redis_data:/data
+   networks:
+    - microservices_network
+    
+
+volumes:
+  catalog_data:
+  ordering_data:
+  payment_data:
+  identity_data:
+  redis_data:
+
+
+networks:
+  microservices_network:
+    driver: bridge

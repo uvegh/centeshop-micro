@@ -8,6 +8,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{827E0CD3-B72
 		docker-compose.ordering.db.yml = docker-compose.ordering.db.yml
 		docker-compose.catalog.db.yml = docker-compose.catalog.db.yml
 		docker-compose.rabbitmq.yml = docker-compose.rabbitmq.yml
+		docker-compose.yml = docker-compose.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"

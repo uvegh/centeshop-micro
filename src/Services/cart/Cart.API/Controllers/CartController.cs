@@ -1,5 +1,5 @@
 ﻿using Cart.Application.Features.Cart.Command.AddItem;
-using MassTransit.Mediator;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Cart.API.Controllers;
@@ -17,9 +17,9 @@ public class CartController:ControllerBase
 
     [HttpPost("add")]
 
-    public async Task<IActionResult> Add(AddToCartCommand command)
+    public async Task<IActionResult> Add(AddToCartCommand req)
     {
-        await _mediator.Publish(command);
+          await _mediator.Send(new AddToCartCommand(req.UserId, req.ProductId, req.Quantity));
 
         return Ok("Item added");
     }
