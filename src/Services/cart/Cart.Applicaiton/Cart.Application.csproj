@@ -13,5 +13,8 @@
     <ProjectReference Include="..\..\..\..\Cart.Infrastructure\Cart.Infrastructure.csproj" />
     <ProjectReference Include="..\..\..\shared\Shared\Shared\Shared.Library.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Features\Cart\NewFolder\" />
+  </ItemGroup>
 
 </Project>
