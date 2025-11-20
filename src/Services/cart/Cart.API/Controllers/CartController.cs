@@ -1,4 +1,5 @@
 ﻿using Cart.Application.Features.Command.Cart.AddItem;
+using Cart.Application.Features.Command.Cart.RemoveItem;
 using Cart.Application.Features.Query.Cart;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -34,4 +35,13 @@ public class CartController:ControllerBase
         return Ok(res);
     }
 
+    [HttpDelete("{userId}/items/{productId}")]
+
+    public async Task<IActionResult> DeleteItem([FromRoute] Guid userId, [FromRoute] Guid productId)
+    {
+
+        var res = await _mediator.Send(new RemoveItemCommand(userId,productId));
+
+        return Ok(res);
+    }
 }
