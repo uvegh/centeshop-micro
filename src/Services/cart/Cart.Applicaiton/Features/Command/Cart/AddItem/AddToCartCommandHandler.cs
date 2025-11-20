@@ -65,14 +65,14 @@ public class AddToCartCommandHandler : IRequestHandler< AddToCartCommand, CartEn
             throw new Exception("Product not found in catalog.");
         }
 
-        // 3. Create the specific item we intend to add
+        //  Create the specific item we intend to add
         var newItem = new CartItem(request.ProductId, request.Quantity, product.Name, product.Price);
 
-        // 4. Use the new List-based repository method to append the item to the Redis List.
+        // Use the new List-based repository method to append the item to the Redis List.
         // This is atomic and does not require fetching existing items first.
         await _cartRepository.AddCartItemAsync(userId, newItem);
 
-        // 5. Retrieve the full, updated cart entity to return to the application layer.
+        // Retrieve the full, updated cart entity to return to the application layer.
         // This method calls ListRangeAsync internally and reconstructs the CartEntity in C# memory.
         var updatedCart = await _cartRepository.GetByUserIdAsync(userId);
 
@@ -80,6 +80,7 @@ public class AddToCartCommandHandler : IRequestHandler< AddToCartCommand, CartEn
         if (updatedCart == null)
         {
             throw new ApplicationException("An error occurred while retrieving the updated cart from Redis.");
+          
         }
 
         return updatedCart;
