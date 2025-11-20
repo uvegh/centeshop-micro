@@ -1,13 +1,14 @@
 ﻿
 
-//using Cart.Domain.Entities;
-//using Cart.Domain.IRepository;
-//using Cart.Infrastructure.Redis;
-//using Microsoft.Extensions.Logging;
-//using StackExchange.Redis;
-//using System.Text.Json;
-//using CartEntity = Cart.Domain.Entities.Cart;
-//namespace Cart.Infrastructure.Repository;
+using Cart.Domain.Entities;
+using Cart.Domain.IRepository;
+using Cart.Infrastructure.Redis;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.Extensions.Logging;
+using StackExchange.Redis;
+using System.Text.Json;
+using CartEntity = Cart.Domain.Entities.Cart;
+namespace Cart.Infrastructure.Repository;
 
 //public  class RedisCartRepository:ICartRespository
 //{
@@ -84,37 +85,27 @@
 //    }
 //}
 
-using Cart.Domain.Entities;
-using Cart.Domain.IRepository;
-using Cart.Infrastructure.Redis;
-using Microsoft.Extensions.Logging;
-using StackExchange.Redis;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.Json;
-using System.Threading.Tasks;
-using CartItem = Cart.Domain.Entities.CartItem;
-using CartEntity = Cart.Domain.Entities.Cart;
 
-namespace Cart.Infrastructure.Repository;
+
 
 public class RedisCartRepository : ICartRespository
 {
     private readonly IDatabase _db;
     private readonly ILogger<RedisCartRepository> _logger;
     private static string GetKey(Guid userId) => $"cart:{userId}";
-
+  
     public RedisCartRepository(RedisConnectionFactory factory, ILogger<RedisCartRepository> logger)
     {
         _db = factory.GetDatabase();
         _logger = logger;
     }
+    
 
     // Method to fetch the entire cart by reconstructing it from a Redis List
     public async Task<CartEntity?> GetByUserIdAsync(Guid userId)
     {
         string key = GetKey(userId);
-
+        _logger.LogInformation("user key- {key}, user id -{userId}",key, userId);
         // 1. Fetch all serialized items from the Redis List range
         RedisValue[] itemJsons = await _db.ListRangeAsync(key, 0, -1);
 
@@ -123,17 +114,16 @@ public class RedisCartRepository : ICartRespository
             return null; // Cart does not exist or is empty
         }
 
-        // 2. Create a brand new, empty Cart entity
+       
         var cart = new CartEntity(userId);
 
-        // 3. Iterate through the fetched items and 'Add' them using domain logic
+        //Iterate through the fetched items and  them using domain logic
         foreach (var json in itemJsons)
         {
             var item = JsonSerializer.Deserialize<CartItem>(json!);
             if (item != null)
             {
-                // This calls the 'AddItem' method shown in your image (lines 30-42)
-                // which handles quantity increasing logic internally.
+              
                 cart.AddItem(item.ProductId, item.Quantity, item.ProductName, item.UnitPrice);
             }
         }
@@ -142,17 +132,76 @@ public class RedisCartRepository : ICartRespository
         return cart;
     }
 
-    // New method: Adds a single CartItem to the Redis List (using RPUSH)
+    // Adds a single CartItem to the Redis List (using RPUSH)
     public async Task AddCartItemAsync(Guid userId, CartItem item)
     {
         string key = GetKey(userId);
         var itemJson = JsonSerializer.Serialize(item);
-
+        _logger.LogInformation("cart details -{itemJson}",itemJson);
         // Use ListRightPushAsync (RPUSH) to append the new item JSON to the list
         // This operation is atomic and fast.
         await _db.ListRightPushAsync(key, itemJson);
     }
 
-    // You can remove the original String-based SaveCartAsync and GetByUserIdAsync methods now.
+    
+    public async Task RemoveCartItemAsync(Guid userId, Guid productId)
+    {
+        string key = GetKey(userId);
+        RedisValue[] cartItems = await _db.ListRangeAsync(key);
+
+        if (cartItems == null || cartItems?.Length == 0) throw new Exception("Cart  not found");
+
+        foreach(var item in cartItems)
+        {
+            
+         var res=   JsonSerializer.Deserialize<CartItem>(item!);
+            if (res!=null && res.ProductId== productId)
+            {//remove matching productId
+                await _db.ListRemoveAsync(key, item);
+                _logger.LogInformation("Removed item from cart {ProductId}", productId);
+                return;
+            }
+            throw new Exception("item  not found");
+
+        }
+    }
+
+
+
+    public async Task UpdateCartItemAsync(Guid userId, Guid productId,CartItem updateObj)
+    {
+        string key = GetKey(userId);
+        var cartItems = await GetItems(userId);
+        var newList = new List< RedisValue>();
+        if (cartItems == null && cartItems.Length == 0) return;
+        
+            
+
+            foreach(var item in cartItems)
+        {
+            var res = JsonSerializer.Deserialize<CartItem>(item!);
+            if(res!=null && res.ProductId == productId)
+            {
+                var jsonVal = JsonSerializer.Serialize(updateObj);
+                newList.Add(jsonVal);
+            }
+            else
+            {
+                newList.Add(item);
+            }
+        }
+        await _db.KeyDeleteAsync(key);
+
+        foreach (var val in newList)
+            await _db.ListRightPushAsync(key, val);
+
+    }
+    public async Task<RedisValue[]?> GetItems(Guid userId)
+    {
+        string key = GetKey(userId);
+        RedisValue[] cartItems = await _db.ListRangeAsync(key);
+        return cartItems;
+    }
 }
+
 

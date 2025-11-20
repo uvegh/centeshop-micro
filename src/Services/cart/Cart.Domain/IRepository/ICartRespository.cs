@@ -8,4 +8,5 @@ public interface ICartRespository
     Task<CartEntity> GetByUserIdAsync(Guid UserId);
     //Task SaveCartAsync(CartEntity cart);
     Task AddCartItemAsync(Guid userId, CartItem item);
+    Task RemoveCartItemAsync(Guid userId, Guid productId);
 }
