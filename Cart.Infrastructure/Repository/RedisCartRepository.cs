@@ -179,11 +179,12 @@ public class RedisCartRepository : ICartRespository
 
             foreach(var item in cartItems)
         {
-            var res = JsonSerializer.Deserialize<CartItem>(item!);
+            var res = JsonSerializer.Deserialize<CartItem>(item.ToString());
             if(res!=null && res.ProductId == productId)
             {
                 var jsonVal = JsonSerializer.Serialize(updateObj);
                 newList.Add(jsonVal);
+
             }
             else
             {
@@ -194,6 +195,7 @@ public class RedisCartRepository : ICartRespository
 
         foreach (var val in newList)
             await _db.ListRightPushAsync(key, val);
+
 
     }
     public async Task<RedisValue[]?> GetItems(Guid userId)

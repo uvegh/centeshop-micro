@@ -14,15 +14,7 @@ public class CatalogClient : ICatalogClient
         _logger = logger;
                                         }
 
-    //public async Task GetCartData()
-    //{
-    //    HttpResponseMessage response = await _http.GetAsync("api/Products");
-    //    response.EnsureSuccessStatusCode();
-    //    var jsonResponse = await response.Content.ReadAsStringAsync();
-    //    _logger.LogInformation("catalog response {jsonResponse}", jsonResponse);
-    
-    //}
-
+ 
     public async Task<ProductDto?> GetProduct(Guid id, CancellationToken ct=default)
     {
         var response = await _http.GetAsync($"/api/Products/{id}");

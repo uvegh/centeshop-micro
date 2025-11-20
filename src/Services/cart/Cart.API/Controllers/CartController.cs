@@ -1,5 +1,7 @@
-﻿using Cart.Application.Features.Command.Cart.AddItem;
+﻿using Cart.Application.DTOs;
+using Cart.Application.Features.Command.Cart.AddItem;
 using Cart.Application.Features.Command.Cart.RemoveItem;
+using Cart.Application.Features.Command.Cart.UpdateItem;
 using Cart.Application.Features.Query.Cart;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -35,7 +37,7 @@ public class CartController:ControllerBase
         return Ok(res);
     }
 
-    [HttpDelete("{userId}/items/{productId}")]
+    [HttpDelete("{userId}/item/{productId}")]
 
     public async Task<IActionResult> DeleteItem([FromRoute] Guid userId, [FromRoute] Guid productId)
     {
@@ -43,5 +45,12 @@ public class CartController:ControllerBase
         var res = await _mediator.Send(new RemoveItemCommand(userId,productId));
 
         return Ok(res);
+    }
+
+    [HttpPatch("{userId}/item/{productId}")]
+    public async Task<IActionResult> UpdateItem([FromRoute] Guid userId, [FromRoute] Guid productId, [FromBody] UpdateQuantityDto dto)
+    {
+        await _mediator.Send(new UpdateCartItemQuantityCommand(userId, productId, dto.Quantity));
+        return NoContent();
     }
 }

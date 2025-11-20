@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Cart.Application.Features.Command.Cart.UpdateItem
 {
-    public class UpdateCartItemQuantityCommandHandler:IRequestHandler<UpdateCartItemQuantityCommand,CartEntity>
+    public class UpdateCartItemQuantityCommandHandler:IRequestHandler<UpdateCartItemQuantityCommand,bool>
     {
         private readonly ILogger _logger;
         private readonly ICartRespository _cartRepo; 
@@ -19,7 +19,7 @@ namespace Cart.Application.Features.Command.Cart.UpdateItem
             
         }
 
-        public async Task<CartItem> Handle(UpdateCartItemQuantityCommand req ,CancellationToken ct)
+        public async Task<bool> Handle(UpdateCartItemQuantityCommand req ,CancellationToken ct)
         {
             var cart = await _cartRepo.GetByUserIdAsync(req.UserId);
             if (cart != null)
@@ -30,12 +30,14 @@ namespace Cart.Application.Features.Command.Cart.UpdateItem
                 {
                     item.UpdateQuantity(req.Quantity);
 
-                    await _cartRepo.
-                    return item;
+                    await _cartRepo.UpdateCartItemAsync(req.UserId, req.ProductId, item);
+                    return true;
 
                 }
+                return false;
                 
             }
+            return false;
             
 
 
