@@ -1,6 +1,5 @@
 ﻿
 
-using Catalog.API.DTOs;
 
 namespace Cart.Application.Interface;
 

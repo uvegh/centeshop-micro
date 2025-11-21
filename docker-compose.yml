@@ -70,7 +70,7 @@ services:
     container_name: rabbitmq
     restart: always
     ports:
-      - "5672:5672"   # AMQP for microservices
+      - "5672:5672"   #  for microservices
       - "15672:15672" # RabbitMQ dashboard
     environment:
       RABBITMQ_DEFAULT_USER: guest

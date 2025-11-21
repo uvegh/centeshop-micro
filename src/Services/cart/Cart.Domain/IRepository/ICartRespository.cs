@@ -1,5 +1,5 @@
 ﻿using Cart.Domain.Entities;
-using Shared.Library.Events.Integrations;
+
 using   CartEntity = Cart.Domain.Entities.Cart;
 namespace Cart.Domain.IRepository;
 

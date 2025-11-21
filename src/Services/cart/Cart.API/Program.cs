@@ -1,9 +1,9 @@
 using Cart.Application.Features.Command.Cart.AddItem;
 using Cart.Application.Interface;
+using Cart.Application.Services;
 using Cart.Domain.IRepository;
 using Cart.Infrastructure.Redis;
 using Cart.Infrastructure.Repository;
-using Cart.Infrastructure.Services;
 using Catalog.API.Configuration;
 using MassTransit;
 using Serilog;
@@ -36,7 +36,7 @@ builder.Services.AddMassTransit(x =>
 {
     x.UsingRabbitMq((ctx, cfg) =>
     {
-        cfg.Host("rabbitMq", "/", h =>
+        cfg.Host("localhost", "/", h =>
     {
         h.Username("guest");
         h.Password("guest");

@@ -43,8 +43,8 @@ public class CheckOutCartCommandHandler:IRequestHandler<CheckOutCartCommand, Car
             }).ToList();
 
             
-         var tp=   checkOutItems.Sum(x => x.Quantity * x.UnitPrice);
-            _logger.LogInformation("first ttotal price={totalPrice}, second tp ={tp}", totalPrice, tp);
+         //var tp=   checkOutItems.Sum(x => x.Quantity * x.UnitPrice);
+            _logger.LogInformation(" total price ={tp}", totalPrice);
             var @event = new CartCheckedOut
             {
                 UserId =
@@ -53,7 +53,8 @@ public class CheckOutCartCommandHandler:IRequestHandler<CheckOutCartCommand, Car
                 Total = totalPrice
             };
 
-          await  _publishEndpoint.Publish(checkOutItems, ct);
+            //publish cartchecked out
+          await  _publishEndpoint.Publish<CartCheckedOut>(@event, ct);
             return @event;
 
         }

@@ -1,7 +1,5 @@
 ﻿using AutoMapper;
 using Cart.Domain.Entities;
-using Catalog.API.DTOs;
-using Shared.Library.Events.Integrations;
 
 
 

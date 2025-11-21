@@ -1,8 +1,7 @@
 ﻿using Cart.Application.Interface;
-using Catalog.API.DTOs;
 using System.Net.Http.Json;
 
-namespace Cart.Infrastructure.Services;
+namespace Cart.Application.Services;
 
 public class CatalogClient : ICatalogClient
 {
@@ -17,7 +16,7 @@ public class CatalogClient : ICatalogClient
  
     public async Task<ProductDto?> GetProduct(Guid id, CancellationToken ct=default)
     {
-        var response = await _http.GetAsync($"/api/Products/{id}");
+        var response = await _http.GetAsync($"/api/Products/{id}",ct);
         if (!response.IsSuccessStatusCode)
             return null;
 

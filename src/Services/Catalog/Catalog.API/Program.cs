@@ -6,6 +6,7 @@ using Catalog.Domain.Interfaces;
 using Catalog.Infrastructure.Data;
 using Catalog.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
+using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,10 +25,19 @@ builder.Services.AddMediatR(cfg =>
 var connecitonStr = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<CatalogDbContext>(options =>
 {
- 
-    options.UseNpgsql(connecitonStr, b => b.MigrationsAssembly("Catalog.Infrastructure"));
+
+    options.UseNpgsql((connecitonStr), b =>{
+        b.MigrationsAssembly("Catalog.Infrastructure");
+        b.EnableRetryOnFailure(
+
+            maxRetryCount: 10,
+            maxRetryDelay: TimeSpan.FromSeconds(5),
+            errorCodesToAdd: null);
+    }    );
 
 });
+
+
 // Configure the HTTP request pipeline.
 var app = builder.Build();
 

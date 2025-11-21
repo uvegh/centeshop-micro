@@ -1,5 +1,6 @@
 ﻿using Cart.Application.DTOs;
 using Cart.Application.Features.Command.Cart.AddItem;
+using Cart.Application.Features.Command.Cart.Checkout;
 using Cart.Application.Features.Command.Cart.RemoveItem;
 using Cart.Application.Features.Command.Cart.UpdateItem;
 using Cart.Application.Features.Query.Cart;
@@ -52,5 +53,19 @@ public class CartController:ControllerBase
     {
         await _mediator.Send(new UpdateCartItemQuantityCommand(userId, productId, dto.Quantity));
         return NoContent();
+    }
+
+    [HttpPost("checkout/{userId}")]
+
+    public async Task <IActionResult> Checkout([FromRoute] Guid userId)
+    {
+        Console.WriteLine("checkout request sent");
+        var res = await _mediator.Send( new CheckOutCartCommand(userId));
+        if (res != null)
+        {
+            return Ok(res);
+        }
+        return NotFound();
+
     }
 }
