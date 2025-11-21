@@ -1,11 +1,18 @@
-﻿namespace Catalog.API.DTOs
-{
-    public record ProductDto(Guid Id
-        , string Name,
-        decimal Price, 
-        int StockQuantity);
+﻿namespace Cart.Application.DTOs;
 
-    public record CreateProductDto(string Name,
-        decimal Price, 
-        int StockQuantity);
+public class ProductDto
+{
+
+    public Guid Id { get; set; }
+    public string Name { get; set; }
+    public decimal Price { get; set; }
+    public int StockQuantity { get; set; }
 }
+
+public class CreateProductDto
+{
+    public string Name { get; set; }
+    public decimal Price { get; set; }
+    public int StockQuantity { get; set; }
+}
+

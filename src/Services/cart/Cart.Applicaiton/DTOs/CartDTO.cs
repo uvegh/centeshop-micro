@@ -1,13 +1,29 @@
 ﻿
 
-using Cart.Domain.Entities;
+
 
 namespace Cart.Application.DTOs;
 
-public record CartDto(Guid UserId,List<CartItem>? Items);
-public record UpdateQuantityDto(
+public class CartDto { 
+    public  Guid UserId { get; set; }
+        
+     public    List<CartItemDto>? Items { get; set; }
+        
+        }
 
-    int Quantity
-);
+public class CheckOutDto
+{
+    public Guid UserId { get; set; }
+
+    public List<CartItemDto>? Items { get; set; }
+    public decimal Total { get; set; }
+
+};
+
+public class UpdateQuantityDto
+{
+
+    public int Quantity { get; set; }
+}
 
 

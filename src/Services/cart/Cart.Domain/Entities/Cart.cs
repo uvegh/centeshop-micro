@@ -5,7 +5,7 @@ using Shared.Library.Model;
 namespace Cart.Domain.Entities;
 
 
-public class Cart
+public class Cart:AggregateRoot
 {
     
 
