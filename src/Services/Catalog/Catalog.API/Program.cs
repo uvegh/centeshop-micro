@@ -45,7 +45,7 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<CatalogDbContext>();
-    Console.WriteLine("Connected to databse",context.Database.GetType());
+    Console.WriteLine("Connected to database",context.Database.GetType());
 }
 
 if (app.Environment.IsDevelopment())

@@ -10,6 +10,11 @@ services:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: cente25
       POSTGRES_DB: catalog_db
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", -U postgres]
+      interval: 5s
+      timeout: 5s
+      retries: 10
     ports:
       - "5433:5432"
 
@@ -26,6 +31,11 @@ services:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: cente24
       POSTGRES_DB: ordering_db
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", -U postgres]
+      interval: 5s
+      timeout: 5s
+      retries: 10
     ports:
       - "5434:5432"
     volumes:
@@ -33,6 +43,7 @@ services:
     networks:
       - microservices_network
    
+
   payment_postgres:
     image: postgres:15-alpine
     container_name: payment_postgres
@@ -41,6 +52,11 @@ services:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: cente25
       POSTGRES_DB: payment_db
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", -U postgres]
+      interval: 5s
+      timeout: 5s
+      retries: 10
     ports:
       - "5435:5432"
     volumes:
@@ -56,6 +72,11 @@ services:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: cente25
       POSTGRES_DB: identity_db
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", -U postgres]
+      interval: 5s
+      timeout: 5s
+      retries: 10
     ports:
       - "5437:5432"
     volumes:

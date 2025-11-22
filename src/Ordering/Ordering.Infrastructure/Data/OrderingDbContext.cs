@@ -33,6 +33,7 @@ public class OrderingDbContext:DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(OrderingDbContext).Assembly);
         //ignore domainevent interface on cnuilding model because its only for outr business logic
         modelBuilder.Ignore <List<IDomainEvent>>();
         base.OnModelCreating(modelBuilder);
