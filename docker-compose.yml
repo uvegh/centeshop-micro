@@ -11,8 +11,8 @@ services:
       POSTGRES_PASSWORD: cente25
       POSTGRES_DB: catalog_db
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready", -U postgres]
-      interval: 5s
+      test: ["CMD-SHELL", "pg_isready", -U admin]
+      interval: 10s
       timeout: 5s
       retries: 10
     ports:
@@ -32,8 +32,8 @@ services:
       POSTGRES_PASSWORD: cente24
       POSTGRES_DB: ordering_db
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready", -U postgres]
-      interval: 5s
+      test: ["CMD-SHELL", "pg_isready", -U admin]
+      interval: 10s
       timeout: 5s
       retries: 10
     ports:
@@ -53,8 +53,8 @@ services:
       POSTGRES_PASSWORD: cente25
       POSTGRES_DB: payment_db
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready", -U postgres]
-      interval: 5s
+      test: ["CMD-SHELL", "pg_isready", -U admin]
+      interval: 10s
       timeout: 5s
       retries: 10
     ports:
@@ -73,8 +73,8 @@ services:
       POSTGRES_PASSWORD: cente25
       POSTGRES_DB: identity_db
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready", -U postgres]
-      interval: 5s
+      test: ["CMD-SHELL", "pg_isready", -U admin]
+      interval: 10s
       timeout: 5s
       retries: 10
     ports:
@@ -109,16 +109,20 @@ services:
    networks:
     - microservices_network
    
-  Seq:
-   image: datalust/seq:latest
+  seq:
+   image: datalust/seq:2024.2
    container_name: seq
    restart: always
-   ports: 
-    - "5341:80"
+   ports:
+     - "8000:80"     # web UI
+     - "5341:5341"   # ingestion API
    environment:
-   - ACCEPT_EULA=Y
+     ACCEPT_EULA: "Y"
+   volumes:
+    - seq-data:/data
    networks:
-    - microservices_network 
+    - microservices_network
+ 
 
     
 
@@ -129,6 +133,7 @@ volumes:
   payment_data:
   identity_data:
   redis_data:
+  seq-data:
 
 
 networks:

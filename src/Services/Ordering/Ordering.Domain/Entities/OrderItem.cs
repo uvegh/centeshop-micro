@@ -4,7 +4,7 @@ namespace Ordering.Domain.Entities;
 
 public  class OrderItem
 {
-    public Guid Id { get; private set; } = new Guid();
+    public Guid Id { get; private set; } 
     public Guid OrderId { get; private set; }
     public Guid ProductId { get; private set; }
     public int Quantity { get; private set; }
@@ -12,6 +12,7 @@ public  class OrderItem
     public decimal UnitPrice { get;private set; }
     public OrderItem(Guid productId, int quantity, decimal unitPrice, string productName)
     {
+        Id = new Guid();
         ProductId = productId;
         Quantity = quantity;
         UnitPrice = unitPrice;

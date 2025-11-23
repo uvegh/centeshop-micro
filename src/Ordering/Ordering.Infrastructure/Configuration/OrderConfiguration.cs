@@ -19,5 +19,7 @@ public class OrderConfiguration:IEntityTypeConfiguration<Order>
         modelBuilder.Property(p => p.Status).IsRequired();
         modelBuilder.Property(p => p.TotalAmount).HasColumnType("decimal").IsRequired();
         modelBuilder.Property(p => p.Address).IsRequired();
+        //set items to field so it can be accessed since its private
+        modelBuilder.Metadata.FindNavigation(nameof(Order.Items))!.SetPropertyAccessMode(PropertyAccessMode.Field);
     }
 }

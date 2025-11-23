@@ -35,7 +35,7 @@ public class OrderingRepository : IOrderingRepository
 
     public async Task<List<Order>> GetAllAsync( CancellationToken ct)
     {
-        var orders = await _dbContext.Set<Order>().ToListAsync();
+        var orders = await _dbContext.Orders.Include(o=>o.Items).OrderByDescending(o=>o.CreatedAt).ToListAsync(ct);
         return orders;
     }
 

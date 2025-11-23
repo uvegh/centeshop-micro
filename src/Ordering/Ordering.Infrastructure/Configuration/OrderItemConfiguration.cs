@@ -12,6 +12,7 @@ public class OrderItemConfiguration:IEntityTypeConfiguration<OrderItem>
     public void Configure(EntityTypeBuilder<OrderItem> modelBuilder) {
         modelBuilder.ToTable("OrderItems");
         modelBuilder.HasKey(p => p.Id);
+        modelBuilder.HasOne<Order>().WithMany(o => o.Items).HasForeignKey(o => o.OrderId).OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Property(p => p.ProductName).IsRequired();
         modelBuilder.Property(p => p.Quantity).IsRequired();
         modelBuilder.Property(p => p.UnitPrice).IsRequired();

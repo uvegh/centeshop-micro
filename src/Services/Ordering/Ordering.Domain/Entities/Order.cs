@@ -25,7 +25,8 @@ public  class Order : AggregateRoot
     {
 
         UserId = userId;
-        _items = items;
+        _items = items ?? new List<OrderItem>();
+
         TotalAmount = totalAmount;
         Status = status;
         Address = address;
@@ -34,10 +35,16 @@ public  class Order : AggregateRoot
 
     public static Order Create( Guid userId, decimal totalAmount, List<OrderItem> items,string address )
     {
-        var order = new Order(userId, items, totalAmount, "Pending",address);
+
+        if(items==null || items.Count == 0)
+        {
+            throw  new Exception("order must have at least one item");
+        }
+        var totAmount = items.Sum(x => x.Quantity * x.UnitPrice);
+        var order = new Order(userId, items, totAmount, "Pending",address);
         //automatically add new order domain event
-      
-     order.AddDomainEvent(new OrderCreatedDomainEvent(order.Id, userId, totalAmount));
+
+     order.AddDomainEvent(new OrderCreatedDomainEvent(order.Id, userId, totAmount));
         
         return order;
     }
