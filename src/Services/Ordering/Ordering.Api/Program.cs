@@ -1,13 +1,21 @@
-using MassTransit;
+﻿using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Ordering.Application.Features.Order.Command;
-using Ordering.Domain.Events;
+
 using Ordering.Domain.Interface;
 using Ordering.Infrastructure.Common;
 using Ordering.Infrastructure.Data;
 using Ordering.Infrastructure.Repository;
+using Serilog;
 var builder = WebApplication.CreateBuilder(args);
 
+
+Log.Logger = new LoggerConfiguration()
+    .Enrich.FromLogContext()
+    .Enrich.WithProperty("Service", "Ordering.API") // ⭐ identifies the service
+    .WriteTo.Console()
+    .WriteTo.Seq("http://seq:5431")
+    .CreateLogger();
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -18,7 +26,7 @@ builder.Services.AddMediatR(cfg =>
 {
     cfg.RegisterServicesFromAssembly(typeof(CreateOrderCommand).Assembly);
 });
-
+builder.Host.UseSerilog((ctx, lc) => lc.WriteTo.Console().ReadFrom.Configuration(ctx.Configuration));
 //register dispatcher so db can be constructed
 builder.Services.AddScoped<IOrderingRepository, OrderingRepository>();
 builder.Services.AddScoped<DomainEventDispatcher>();

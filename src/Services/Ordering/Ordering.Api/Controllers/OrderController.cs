@@ -2,6 +2,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Ordering.Application.Features.Order.Command;
+using Ordering.Application.Features.Order.Query;
 
 namespace Ordering.API.Controllers
 {
@@ -21,12 +22,21 @@ namespace Ordering.API.Controllers
 
         [HttpPost]
 
-       public async Task<ActionResult<Guid>> Create(CreateOrderCommand command)
+       public async Task<ActionResult> Create(CreateOrderCommand command)
         {
         var res=    await _mediator.Send(command);
             return Ok(res);
 
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetOrders()
+        {
+            var res = await _mediator.Send(new GetOrdersQuery());
+                return Ok( res);
+        }
+
+
 
        
         

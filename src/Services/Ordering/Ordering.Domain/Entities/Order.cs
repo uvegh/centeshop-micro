@@ -34,7 +34,7 @@ public  class Order : AggregateRoot
 
     public static Order Create( Guid userId, decimal totalAmount, List<OrderItem> items,string address )
     {
-        var order = new Order(userId= Guid.NewGuid(), items, totalAmount, "Pending",address);
+        var order = new Order(userId, items, totalAmount, "Pending",address);
         //automatically add new order domain event
       
      order.AddDomainEvent(new OrderCreatedDomainEvent(order.Id, userId, totalAmount));
