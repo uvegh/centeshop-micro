@@ -50,7 +50,8 @@ public class CheckOutCartCommandHandler:IRequestHandler<CheckOutCartCommand, Car
                 UserId =
                 req.UserId,
                 Items = checkOutItems,
-                Total = totalPrice
+                Total = totalPrice,
+                Address = req.Address
             };
 
             //publish cartchecked out

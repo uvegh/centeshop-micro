@@ -1,5 +1,6 @@
-﻿using MassTransit;
+﻿
 using Microsoft.EntityFrameworkCore;
+using Ordering.API.Consumers;
 using Ordering.Application.Features.Order.Command;
 
 using Ordering.Domain.Interface;
@@ -25,6 +26,10 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddMediatR(cfg =>
 {
     cfg.RegisterServicesFromAssembly(typeof(CreateOrderCommand).Assembly);
+
+
+  
+
 });
 builder.Host.UseSerilog((ctx, lc) => lc.WriteTo.Console().ReadFrom.Configuration(ctx.Configuration));
 //register dispatcher so db can be constructed
@@ -46,6 +51,7 @@ builder.Services.AddDbContext<OrderingDbContext>(options =>
 
 builder.Services.AddMassTransit(x =>
 {
+    x.AddConsumers(typeof(CartCheckedOutConsumer).Assembly);
     x.UsingRabbitMq((ctx, cfg) =>
     {
         cfg.Host("localhost", "/", h =>
@@ -53,7 +59,14 @@ builder.Services.AddMassTransit(x =>
             h.Username("guest");
             h.Password("guest");
         });
-
+        //cfg.ReceiveEndpoint("cart-checkedout-event", e =>
+        //{
+        //    e.ConfigureConsumer<CartCheckedOutConsumer>(ctx);
+        //});
+        cfg.ReceiveEndpoint("cart-checkedout-event", e =>
+        {
+            e.ConfigureConsumers(ctx);
+        });
 
     }
     );
