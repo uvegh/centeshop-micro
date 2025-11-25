@@ -10,10 +10,10 @@
 		<PackageReference Include="MediatR" Version="13.1.0" />
 	</ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Catalog.Infrastructure\Catalog.Infrastructure.csproj" />
+    <Folder Include="Features\Command\Product\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Features\Command\Product\" />
+    <ProjectReference Include="..\Catalog.Infrastructure\Catalog.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

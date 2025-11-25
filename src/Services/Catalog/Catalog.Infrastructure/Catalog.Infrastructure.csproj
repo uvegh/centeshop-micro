@@ -22,7 +22,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\src\Services\Catalog\Catalog.Domain\Catalog.Domain.csproj" />
-	  <ProjectReference Include="..\src\shared\Shared\Shared\Shared.Library.csproj" />
+	  <ProjectReference Include="..\Catalog.Domain\Catalog.Domain.csproj" />
 	</ItemGroup>
 </Project>

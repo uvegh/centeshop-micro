@@ -1,7 +1,150 @@
+# version: "3.8"
+
+# services:
+
+#   catalog_postgres:
+#     image: postgres:15-alpine
+#     container_name: catalog_postgres
+#     restart: always
+#     environment:
+#       POSTGRES_USER: admin
+#       POSTGRES_PASSWORD: cente25
+#       POSTGRES_DB: catalog_db
+#     healthcheck:
+#       test: ["CMD-SHELL", "pg_isready", -U admin]
+#       interval: 10s
+#       timeout: 5s
+#       retries: 10
+#     ports:
+#       - "5433:5432"
+
+#     volumes:
+#       - catalog_data:/var/lib/postgresql/data
+#     networks:
+#       - microservices_network
+
+#   ordering_postgres:
+#     image: postgres:15-alpine
+#     container_name: ordering_postgres
+#     restart: always
+#     environment:
+#       POSTGRES_USER: admin
+#       POSTGRES_PASSWORD: cente24
+#       POSTGRES_DB: ordering_db
+#     healthcheck:
+#       test: ["CMD-SHELL", "pg_isready", -U admin]
+#       interval: 10s
+#       timeout: 5s
+#       retries: 10
+#     ports:
+#       - "5434:5432"
+#     volumes:
+#       - ordering_data:/var/lib/postgresql/data
+#     networks:
+#       - microservices_network
+   
+
+#   payment_postgres:
+#     image: postgres:15-alpine
+#     container_name: payment_postgres
+#     restart: always
+#     environment:
+#       POSTGRES_USER: admin
+#       POSTGRES_PASSWORD: cente25
+#       POSTGRES_DB: payment_db
+#     healthcheck:
+#       test: ["CMD-SHELL", "pg_isready", -U admin]
+#       interval: 10s
+#       timeout: 5s
+#       retries: 10
+#     ports:
+#       - "5435:5432"
+#     volumes:
+#       - payment_data:/var/lib/postgresql/data
+#     networks:
+#       - microservices_network 
+   
+#   identity_postgres:
+#     image: postgres:15-alpine
+#     container_name: identity_postgres
+#     restart: always
+#     environment:
+#       POSTGRES_USER: admin
+#       POSTGRES_PASSWORD: cente25
+#       POSTGRES_DB: identity_db
+#     healthcheck:
+#       test: ["CMD-SHELL", "pg_isready", -U admin]
+#       interval: 10s
+#       timeout: 5s
+#       retries: 10
+#     ports:
+#       - "5437:5432"
+#     volumes:
+#       - identity_data:/var/lib/postgresql/data
+#     networks:
+#       - microservices_network
+
+  
+
+#   rabbitmq:
+#     image: rabbitmq:3-management-alpine
+#     container_name: rabbitmq
+#     restart: always
+#     ports:
+#       - "5672:5672"    for microservices
+#       - "15672:15672" RabbitMQ dashboard
+#     environment:
+#       RABBITMQ_DEFAULT_USER: guest
+#       RABBITMQ_DEFAULT_PASS: guest
+#     networks:
+#       - microservices_network
+
+#   redis:
+#    image: redis:7-alpine
+#    command: ["redis-server", "--appendonly", "yes"]
+#    volumes:
+#     - redis_data:/data
+#    ports:
+#     - "6379:6379"
+#    networks:
+#     - microservices_network
+   
+#   seq:
+#    image: datalust/seq:2024.2
+#    container_name: seq
+#    restart: always
+#    ports:
+#      - "8000:80"     web UI
+#      - "5341:5341"   ingestion API
+#    environment:
+#      ACCEPT_EULA: "Y"
+#    volumes:
+#     - seq-data:/data
+#    networks:
+#     - microservices_network
+ 
+
+    
+
+
+# volumes:
+#   catalog_data:
+#   ordering_data:
+#   payment_data:
+#   identity_data:
+#   redis_data:
+#   seq-data:
+
+
+# networks:
+#   microservices_network:
+#     driver: bridge
+
+
 version: "3.8"
 
 services:
-
+  # Catalog API + PostgreSQL
   catalog_postgres:
     image: postgres:15-alpine
     container_name: catalog_postgres
@@ -11,18 +154,18 @@ services:
       POSTGRES_PASSWORD: cente25
       POSTGRES_DB: catalog_db
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready", -U admin]
+      test: ["CMD-SHELL", "pg_isready", "-U", "admin"]
       interval: 10s
       timeout: 5s
       retries: 10
     ports:
-      - "5433:5432"
-
+      - "5433:5432"  # Exposing to host 5433 for Catalog DB
     volumes:
       - catalog_data:/var/lib/postgresql/data
     networks:
       - microservices_network
 
+  # Ordering API + PostgreSQL
   ordering_postgres:
     image: postgres:15-alpine
     container_name: ordering_postgres
@@ -32,109 +175,114 @@ services:
       POSTGRES_PASSWORD: cente24
       POSTGRES_DB: ordering_db
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready", -U admin]
+      test: ["CMD-SHELL", "pg_isready", "-U", "admin"]
       interval: 10s
       timeout: 5s
       retries: 10
     ports:
-      - "5434:5432"
+      - "5434:5432"  # Exposing to host 5434 for Ordering DB
     volumes:
       - ordering_data:/var/lib/postgresql/data
     networks:
       - microservices_network
-   
 
-  payment_postgres:
-    image: postgres:15-alpine
-    container_name: payment_postgres
-    restart: always
-    environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: cente25
-      POSTGRES_DB: payment_db
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready", -U admin]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-    ports:
-      - "5435:5432"
-    volumes:
-      - payment_data:/var/lib/postgresql/data
-    networks:
-      - microservices_network 
-   
-  identity_postgres:
-    image: postgres:15-alpine
-    container_name: identity_postgres
-    restart: always
-    environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: cente25
-      POSTGRES_DB: identity_db
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready", -U admin]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-    ports:
-      - "5437:5432"
-    volumes:
-      - identity_data:/var/lib/postgresql/data
-    networks:
-      - microservices_network
-
-  
-
+  # RabbitMQ (Messaging Queue for Microservices)
   rabbitmq:
     image: rabbitmq:3-management-alpine
     container_name: rabbitmq
     restart: always
     ports:
-      - "5672:5672"   #  for microservices
-      - "15672:15672" # RabbitMQ dashboard
+      - "5672:5672"   # AMQP port for microservices to communicate
+      - "15672:15672" # RabbitMQ dashboard for monitoring
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
     networks:
       - microservices_network
 
+  # Redis (Used by Cart service for persistence)
   redis:
-   image: redis:7-alpine
-   command: ["redis-server", "--appendonly", "yes"]
-   volumes:
-    - redis_data:/data
-   ports:
-    - "6379:6379"
-   networks:
-    - microservices_network
-   
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"  # Redis standard port
+    networks:
+      - microservices_network
+
+  # Seq (Logging Service, enabled by default)
   seq:
-   image: datalust/seq:2024.2
-   container_name: seq
-   restart: always
-   ports:
-     - "8000:80"     # web UI
-     - "5341:5341"   # ingestion API
-   environment:
-     ACCEPT_EULA: "Y"
-   volumes:
-    - seq-data:/data
-   networks:
-    - microservices_network
- 
+    image: datalust/seq:2024.2
+    container_name: seq
+    restart: always
+    ports:
+      - "8000:80"     # Web UI for Seq logs
+      - "5341:5341"   # Ingestion API for logs
+    environment:
+      ACCEPT_EULA: "Y"  # Automatically accepts the Seq license
+    volumes:
+      - seq-data:/data
+    networks:
+      - microservices_network
 
-    
+  # Catalog API Service
+  catalog-api:
+    image: vincent/catalog-api:latest
+    container_name: catalog-api
+    restart: always
+    ports:
+      - "5001:80"     # Expose on port 5001 for testing
+    environment:
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__DefaultConnection=Host=catalog_postgres;Database=catalog_db;Username=admin;Password=cente25
+    depends_on:
+      - catalog_postgres
+      - redis
+      - rabbitmq
+    networks:
+      - microservices_network
 
+  # Cart API Service
+  cart-api:
+    image: vincent/cart-api:latest
+    container_name: cart-api
+    restart: always
+    ports:
+      - "5002:80"     # Expose on port 5002 for testing
+    environment:
+      - ASPNETCORE_URLS=http://+:80
+      - Redis=redis:6379
+      - RabbitMQ__Host=rabbitmq
+    depends_on:
+      - catalog_postgres
+      - redis
+      - rabbitmq
+    networks:
+      - microservices_network
+
+  # Ordering API Service
+  ordering-api:
+    image: vincent/ordering-api:latest
+    container_name: ordering-api
+    restart: always
+    ports:
+      - "5003:80"     # Expose on port 5003 for testing
+    environment:
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__OrderingDbConnection=Host=ordering_postgres;Database=ordering_db;Username=admin;Password=cente24
+      - RabbitMQ__Host=rabbitmq
+    depends_on:
+      - ordering_postgres
+      - rabbitmq
+    networks:
+      - microservices_network
 
 volumes:
   catalog_data:
   ordering_data:
-  payment_data:
-  identity_data:
   redis_data:
   seq-data:
-
 
 networks:
   microservices_network:

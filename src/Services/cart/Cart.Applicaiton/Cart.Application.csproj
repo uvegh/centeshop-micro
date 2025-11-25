@@ -12,9 +12,9 @@
 		<PackageReference Include="MassTransit" Version="8.5.5" />
 		<PackageReference Include="MassTransit.RabbitMQ" Version="8.5.5" />
 	</ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Cart.Infrastructure\Cart.Infrastructure.csproj" />
-    <ProjectReference Include="..\..\..\shared\Shared\Shared\Shared.Library.csproj" />
-  </ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Cart.Infrastructure\Cart.Infrastructure.csproj" />
+	</ItemGroup>
 
 </Project>

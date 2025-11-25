@@ -1,0 +1,107 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: postgres-secrets
+  namespace: centeshop
+type: Opaque
+stringData:
+  CATALOG_DB_PASSWORD: "cente25"
+  ORDERING_DB_PASSWORD: "cente24"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: catalog-postgres
+  namespace: centeshop
+spec:
+  selector:
+    app: catalog-postgres
+  ports:
+    - port: 5432
+      targetPort: 5432
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: catalog-postgres
+  namespace: centeshop
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: catalog-postgres
+  template:
+    metadata:
+      labels:
+        app: catalog-postgres
+    spec:
+      containers:
+        - name: catalog-postgres
+          image: postgres:15-alpine
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_USER
+              value: "admin"
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secrets
+                  key: CATALOG_DB_PASSWORD
+            - name: POSTGRES_DB
+              value: "catalog_db"
+          volumeMounts:
+            - name: catalog-data
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: catalog-data
+          emptyDir: {} # for demo; for real AKS use a PVC
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ordering-postgres
+  namespace: centeshop
+spec:
+  selector:
+    app: ordering-postgres
+  ports:
+    - port: 5432
+      targetPort: 5432
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ordering-postgres
+  namespace: centeshop
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ordering-postgres
+  template:
+    metadata:
+      labels:
+        app: ordering-postgres
+    spec:
+      containers:
+        - name: ordering-postgres
+          image: postgres:15-alpine
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_USER
+              value: "admin"
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secrets
+                  key: ORDERING_DB_PASSWORD
+            - name: POSTGRES_DB
+              value: "ordering_db"
+          volumeMounts:
+            - name: ordering-data
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: ordering-data
+          emptyDir: {}
