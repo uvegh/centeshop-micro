@@ -1,0 +1,136 @@
+# Variables
+$RG = "centeshopRG"
+$LOCATION = "eastus"
+$ENV = "centeshop-env"
+$ACR = "centeshopacr"  # Azure Container Registry name
+
+# 1. Create Resource Group
+Write-Host "Creating resource group..." -ForegroundColor Green
+az group create --name $RG --location $LOCATION
+
+# 2. Create Container Registry (to store your images)
+Write-Host "Creating container registry..." -ForegroundColor Green
+az acr create --resource-group $RG --name $ACR --sku Basic --admin-enabled true
+
+# 3. Login to ACR
+az acr login --name $ACR
+
+# 4. Tag and push your images
+Write-Host "Pushing images to Azure..." -ForegroundColor Green
+docker tag vincent/catalog-api:latest $ACR.azurecr.io/catalog-api:latest
+docker tag vincent/cart-api:latest $ACR.azurecr.io/cart-api:latest
+docker tag vincent/ordering-api:latest $ACR.azurecr.io/ordering-api:latest
+
+docker push $ACR.azurecr.io/catalog-api:latest
+docker push $ACR.azurecr.io/cart-api:latest
+docker push $ACR.azurecr.io/ordering-api:latest
+
+# 5. Get ACR credentials
+$ACRPW = az acr credential show --name $ACR --query "passwords[0].value" -o tsv
+
+# 6. Create Container Apps Environment
+Write-Host "Creating Container Apps environment..." -ForegroundColor Green
+az containerapp env create `
+  --name $ENV `
+  --resource-group $RG `
+  --location $LOCATION
+
+# 7. Deploy PostgreSQL for Catalog
+Write-Host "Deploying Catalog PostgreSQL..." -ForegroundColor Green
+az containerapp create `
+  --name catalog-postgres `
+  --resource-group $RG `
+  --environment $ENV `
+  --image postgres:15-alpine `
+  --target-port 5432 `
+  --ingress internal `
+  --min-replicas 1 `
+  --max-replicas 1 `
+  --cpu 0.5 `
+  --memory 1.0Gi `
+  --env-vars `
+    "POSTGRES_USER=admin" `
+    "POSTGRES_PASSWORD=cente25" `
+    "POSTGRES_DB=catalog_db"
+
+# 8. Deploy Redis
+Write-Host "Deploying Redis..." -ForegroundColor Green
+az containerapp create `
+  --name redis `
+  --resource-group $RG `
+  --environment $ENV `
+  --image redis:7-alpine `
+  --target-port 6379 `
+  --ingress internal `
+  --min-replicas 1 `
+  --max-replicas 1 `
+  --cpu 0.25 `
+  --memory 0.5Gi
+
+# 9. Deploy RabbitMQ
+Write-Host "Deploying RabbitMQ..." -ForegroundColor Green
+az containerapp create `
+  --name rabbitmq `
+  --resource-group $RG `
+  --environment $ENV `
+  --image rabbitmq:3-management-alpine `
+  --target-port 5672 `
+  --ingress internal `
+  --min-replicas 1 `
+  --max-replicas 1 `
+  --cpu 0.5 `
+  --memory 1.0Gi `
+  --env-vars `
+    "RABBITMQ_DEFAULT_USER=guest" `
+    "RABBITMQ_DEFAULT_PASS=guest"
+
+# 10. Deploy Catalog API
+Write-Host "Deploying Catalog API..." -ForegroundColor Green
+az containerapp create `
+  --name catalog-api `
+  --resource-group $RG `
+  --environment $ENV `
+  --image $ACR.azurecr.io/catalog-api:latest `
+  --registry-server $ACR.azurecr.io `
+  --registry-username $ACR `
+  --registry-password $ACRPW `
+  --target-port 8080 `
+  --ingress external `
+  --min-replicas 0 `
+  --max-replicas 3 `
+  --cpu 0.5 `
+  --memory 1.0Gi `
+  --env-vars `
+    "ASPNETCORE_URLS=http://+:8080" `
+    "ASPNETCORE_ENVIRONMENT=Development" `
+    "ConnectionStrings__DefaultConnection=Host=catalog-postgres;Port=5432;Database=catalog_db;Username=admin;Password=cente25"
+
+# 11. Deploy Cart API
+Write-Host "Deploying Cart API..." -ForegroundColor Green
+az containerapp create `
+  --name cart-api `
+  --resource-group $RG `
+  --environment $ENV `
+  --image $ACR.azurecr.io/cart-api:latest `
+  --registry-server $ACR.azurecr.io `
+  --registry-username $ACR `
+  --registry-password $ACRPW `
+  --target-port 8080 `
+  --ingress external `
+  --min-replicas 0 `
+  --max-replicas 3 `
+  --cpu 0.5 `
+  --memory 1.0Gi `
+  --env-vars `
+    "ASPNETCORE_URLS=http://+:8080" `
+    "ASPNETCORE_ENVIRONMENT=Development" `
+    "Redis=redis:6379" `
+    "RabbitMQ__Host=rabbitmq"
+
+# 12. Get URLs
+Write-Host "`n=== Deployment Complete! ===" -ForegroundColor Green
+Write-Host "Catalog API URL:" -ForegroundColor Cyan
+az containerapp show --name catalog-api --resource-group $RG --query properties.configuration.ingress.fqdn -o tsv
+
+Write-Host "Cart API URL:" -ForegroundColor Cyan
+az containerapp show --name cart-api --resource-group $RG --query properties.configuration.ingress.fqdn -o tsv

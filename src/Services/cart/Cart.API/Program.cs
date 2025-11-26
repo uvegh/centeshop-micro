@@ -31,12 +31,16 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", b => b.AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod());
 });
-builder.Host.UseSerilog((ctx, lc) => lc.WriteTo.Console().ReadFrom.Configuration(ctx.Configuration));
+Log.Logger = new LoggerConfiguration()
+        .WriteTo.Console()
+        .CreateLogger();
+
+builder.Host.UseSerilog();
 builder.Services.AddMassTransit(x =>
 {
     x.UsingRabbitMq((ctx, cfg) =>
     {
-        cfg.Host("localhost", "/", h =>
+        cfg.Host("rabbitmq", "/", h =>
     {
         h.Username("guest");
         h.Password("guest");
@@ -53,11 +57,12 @@ builder.Services.AddHttpClient<ICatalogClient, CatalogClient>(c =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
+//if (app.Environment.IsDevelopment())
+//{
+//}
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+
 
 app.UseHttpsRedirection();
 

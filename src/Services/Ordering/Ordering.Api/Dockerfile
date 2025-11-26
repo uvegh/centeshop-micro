@@ -4,19 +4,19 @@
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 USER $APP_UID
 WORKDIR /app
-EXPOSE 8080
-EXPOSE 8081
-
+#EXPOSE 8080
+#EXPOSE 8081
+EXPOSE 80
 
 # This stage is used to build the service project
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["src/Services/Ordering/Ordering.Api/Ordering.API.csproj", "src/Services/Ordering/Ordering.Api/"]
-COPY ["src/Ordering/Ordering.Application/Ordering.Application.csproj", "src/Ordering/Ordering.Application/"]
-COPY ["src/Ordering/Ordering.Infrastructure/Ordering.Infrastructure.csproj", "src/Ordering/Ordering.Infrastructure/"]
+COPY ["src/Services/Ordering/Ordering.Application/Ordering.Application.csproj", "src/Services/Ordering/Ordering.Application/"]
+COPY ["src/Services/Ordering/Ordering.Infrastructure/Ordering.Infrastructure.csproj", "src/Services/Ordering/Ordering.Infrastructure/"]
 COPY ["src/Services/Ordering/Ordering.Domain/Ordering.Domain.csproj", "src/Services/Ordering/Ordering.Domain/"]
-COPY ["src/shared/Shared/Shared/Shared.Library.csproj", "src/shared/Shared/Shared/"]
+COPY ["src/Common/Shared.Library.csproj", "src/Common/"]
 RUN dotnet restore "./src/Services/Ordering/Ordering.Api/Ordering.API.csproj"
 COPY . .
 WORKDIR "/src/src/Services/Ordering/Ordering.Api"

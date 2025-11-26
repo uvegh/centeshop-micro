@@ -48,11 +48,11 @@ using (var scope = app.Services.CreateScope())
     Console.WriteLine("Connected to database",context.Database.GetType());
 }
 
-if (app.Environment.IsDevelopment())
-{
+//if (app.Environment.IsDevelopment())
+//{ }
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+
 
 app.UseHttpsRedirection();
 

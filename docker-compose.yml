@@ -229,23 +229,35 @@ services:
   # Catalog API Service
   catalog-api:
     image: vincent/catalog-api:latest
+    build:
+      context: .
+      dockerfile: src/Services/Catalog/Catalog.API/Dockerfile
     container_name: catalog-api
     restart: always
     ports:
-      - "5001:80"     # Expose on port 5001 for testing
+      - "5001:8080"     # Expose on port 5001 for testing
     environment:
-      - ASPNETCORE_URLS=http://+:80
+      
       - ConnectionStrings__DefaultConnection=Host=catalog_postgres;Database=catalog_db;Username=admin;Password=cente25
     depends_on:
-      - catalog_postgres
-      - redis
-      - rabbitmq
+     catalog_postgres:
+        condition: service_healthy
+      
+     redis:
+      condition: service_healthy
+     rabbitmq:
+      condition: service_healthy
+
     networks:
       - microservices_network
 
   # Cart API Service
   cart-api:
     image: vincent/cart-api:latest
+     
+    build:
+      context: .
+      dockerfile: src/Services/cart/Cart.API/Dockerfile
     container_name: cart-api
     restart: always
     ports:
@@ -264,6 +276,9 @@ services:
   # Ordering API Service
   ordering-api:
     image: vincent/ordering-api:latest
+    build:
+      context: .
+      dockerfile: src/Services/Ordering/Ordering.API/Dockerfile
     container_name: ordering-api
     restart: always
     ports:

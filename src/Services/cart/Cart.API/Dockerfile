@@ -12,14 +12,14 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["src/services/cart/Cart.API/Cart.API.csproj", "src/services/cart/Cart.API/"]
+COPY ["src/Services/cart/Cart.API/Cart.API.csproj", "src/services/cart/Cart.API/"]
 COPY ["src/Services/cart/Cart.Applicaiton/Cart.Application.csproj", "src/Services/cart/Cart.Applicaiton/"]
-COPY ["Cart.Infrastructure/Cart.Infrastructure.csproj", "Cart.Infrastructure/"]
+COPY ["src/Services/cart/Cart.Infrastructure/Cart.Infrastructure.csproj", "src/Services/cart/Cart.Infrastructure/"]
 COPY ["src/Services/cart/Cart.Domain/Cart.Domain.csproj", "src/Services/cart/Cart.Domain/"]
-COPY ["src/shared/Shared/Shared/Shared.Library.csproj", "src/shared/Shared/Shared/"]
+COPY ["src/Common/Shared.Library.csproj", "src/Common/"]
 RUN dotnet restore "./src/services/cart/Cart.API/Cart.API.csproj"
 COPY . .
-WORKDIR "/src/src/services/cart/Cart.API"
+WORKDIR "/src/src/Services/cart/Cart.API"
 RUN dotnet build "./Cart.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage

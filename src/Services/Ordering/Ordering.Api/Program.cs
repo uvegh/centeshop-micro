@@ -31,7 +31,11 @@ builder.Services.AddMediatR(cfg =>
   
 
 });
-builder.Host.UseSerilog((ctx, lc) => lc.WriteTo.Console().ReadFrom.Configuration(ctx.Configuration));
+Log.Logger = new LoggerConfiguration()
+        .WriteTo.Console()
+        .CreateLogger();
+
+builder.Host.UseSerilog();
 //register dispatcher so db can be constructed
 builder.Services.AddScoped<IOrderingRepository, OrderingRepository>();
 builder.Services.AddScoped<DomainEventDispatcher>();
@@ -54,7 +58,7 @@ builder.Services.AddMassTransit(x =>
     x.AddConsumers(typeof(CartCheckedOutConsumer).Assembly);
     x.UsingRabbitMq((ctx, cfg) =>
     {
-        cfg.Host("localhost", "/", h =>
+        cfg.Host("rabbitmq", "/", h =>
         {
             h.Username("guest");
             h.Password("guest");
@@ -83,13 +87,13 @@ using (var scope = app.Services.CreateScope())
     var context = scope.ServiceProvider.GetRequiredService<OrderingDbContext>();
     Console.WriteLine(context.Database.GetConnectionString());
 }
-if (app.Environment.IsDevelopment())
-{
+//if (app.Environment.IsDevelopment())
+//{
+//    }
     app.UseSwagger();
     app.UseSwaggerUI();
-}
 
-app.UseHttpsRedirection();
+    app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
