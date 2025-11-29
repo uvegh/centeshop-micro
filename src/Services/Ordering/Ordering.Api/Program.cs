@@ -10,6 +10,11 @@ using Ordering.Infrastructure.Repository;
 using Serilog;
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", b => b.AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod());
+});
+
 
 Log.Logger = new LoggerConfiguration()
     .Enrich.FromLogContext()
@@ -80,17 +85,40 @@ var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 
-
+app.UseCors("AllowAll");
 
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<OrderingDbContext>();
     Console.WriteLine(context.Database.GetConnectionString());
 }
+
+//using (var scope = app.Services.CreateScope())
+//{
+//    var db = scope.ServiceProvider.GetRequiredService<OrderingDbContext>();
+//    db.Database.Migrate();   // <--- Create the tables
+//    Console.WriteLine("Database migrated successfully");
+//}
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<OrderingDbContext>();
+    try
+    {
+        db.Database.Migrate();
+        Console.WriteLine("Database migrated successfully");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Warning: Database migration failed: {ex.Message}");
+        Console.WriteLine("App will start anyway - check database connection");
+        // Don't crash - let Swagger still work
+    }
+}
 //if (app.Environment.IsDevelopment())
 //{
 //    }
-    app.UseSwagger();
+app.UseSwagger();
     app.UseSwaggerUI();
 
     app.UseHttpsRedirection();
