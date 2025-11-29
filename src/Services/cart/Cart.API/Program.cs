@@ -11,6 +11,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", b => b.AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod());
+});
+
+
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -27,10 +33,7 @@ builder.Services.AddAutoMapper(cfg =>
 {
     cfg.AddProfile<MapperConfig>();
 });
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAll", b => b.AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod());
-});
+
 Log.Logger = new LoggerConfiguration()
         .WriteTo.Console()
         .CreateLogger();
@@ -49,18 +52,23 @@ builder.Services.AddMassTransit(x =>
 
     });
 });
-builder.Services.AddHttpClient<ICatalogClient, CatalogClient>(c =>
+// Add HttpClient for Catalog API
+builder.Services.AddHttpClient<ICatalogClient, CatalogClient>(client =>
 {
-    var url = builder.Configuration.GetConnectionString("CatalogServiceUrl");
-    c.BaseAddress = new Uri(url)?? throw new Exception("Catalog url is missing");
+    var catalogUrl = builder.Configuration.GetConnectionString("CatalogServiceUrl")
+                     ?? "http://catalog-api:80";//fallback url
+    client.BaseAddress = new Uri(catalogUrl);
+    client.Timeout = TimeSpan.FromSeconds(30);
 });
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 //if (app.Environment.IsDevelopment())
 //{
 //}
-    app.UseSwagger();
+app.UseCors("AllowAll");
+app.UseSwagger();
     app.UseSwaggerUI();
 
 
